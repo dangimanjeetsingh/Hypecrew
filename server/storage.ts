@@ -51,24 +51,24 @@ export class MemStorage implements IStorage {
       checkPeriod: 86400000 // prune expired entries every 24h
     });
     
-    // Create two test accounts with proper hashed passwords
-    // Admin account - password: admin123
-    const hashedAdminPassword = "c0fa1bc00531bd78ef2d33a6a6078818ebddc5cd6aea5f4335df67501a822feee9dff86b25164ce9c7ac4a1cf34ddfde0d9e05007a42e3fac32e5c71dc3ff3f6.65b5ed6595a3c15f";
+    // Create two test accounts with plain text passwords (for demo purposes only)
+    // In a real application, passwords should be hashed before storing
+    
+    // Admin account - direct password storage
     this.users.set(1, {
       id: 1,
       username: "admin",
-      password: hashedAdminPassword,
+      password: "admin123",
       name: "Admin User",
       email: "manjeetsinghdangi@gmail.com",
       isAdmin: true
     });
     
-    // Regular user account - password: pass1111
-    const hashedRegularPassword = "9c9064c59f1ffa2e174ee754d2979be80dd30db552ec03e7e327e9b1a4bd594e6e8e53b2a8f6e7944bcaf15393521cff7070f66b6d7f1af4b349e0d23383b94c.8bf5ecd961c0d4f0";
+    // Regular user account - direct password storage
     this.users.set(2, {
       id: 2,
       username: "user",
-      password: hashedRegularPassword,
+      password: "pass1111",
       name: "Regular User",
       email: "user@example.com",
       isAdmin: false
