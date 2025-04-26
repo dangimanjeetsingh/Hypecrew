@@ -27,7 +27,7 @@ export interface IStorage {
   createRegistration(registration: InsertRegistration): Promise<Registration>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Using any type for session store due to type compatibility issues
 }
 
 export class MemStorage implements IStorage {
@@ -37,7 +37,7 @@ export class MemStorage implements IStorage {
   private userIdCounter: number;
   private eventIdCounter: number;
   private registrationIdCounter: number;
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Using any type for sessionStore
 
   constructor() {
     this.users = new Map();
@@ -51,14 +51,18 @@ export class MemStorage implements IStorage {
       checkPeriod: 86400000 // prune expired entries every 24h
     });
     
-    // Add admin user
-    this.createUser({
+    // Add admin user - password is already hashed
+    // Note: The hashed password for "pass1111" 
+    const hashedAdminPassword = "5a5b0f1190ec1df7467986b9b34ae92e7b60a56183bd83df6ffefde9b48b7c15b11152195d4f156bdb80cc60bcb93f3d8a58a74d142ca2dbc8f4e967c5e1571c.18e0569bb5b6b53d2c4af5fe78482b44";
+    this.users.set(1, {
+      id: 1,
       username: "admin",
-      password: "admin123", // This would be hashed in the auth module
+      password: hashedAdminPassword,
       name: "Admin User",
       email: "manjeetsinghdangi@gmail.com",
       isAdmin: true
     });
+    this.userIdCounter = 2;
     
     // Add sample events
     this.createEvent({
@@ -153,7 +157,12 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { id, ...insertUser };
+    // Ensure isAdmin has a default value of false
+    const user: User = { 
+      id, 
+      ...insertUser, 
+      isAdmin: insertUser.isAdmin ?? false 
+    };
     this.users.set(id, user);
     return user;
   }
@@ -184,7 +193,12 @@ export class MemStorage implements IStorage {
 
   async createEvent(insertEvent: InsertEvent): Promise<Event> {
     const id = this.eventIdCounter++;
-    const event: Event = { id, ...insertEvent };
+    const event: Event = { 
+      id, 
+      ...insertEvent,
+      endDate: insertEvent.endDate ?? null,
+      featured: insertEvent.featured ?? false
+    };
     this.events.set(id, event);
     return event;
   }
