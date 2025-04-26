@@ -441,7 +441,7 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
             type="button"
             variant="outline"
             className="mr-3"
-            onClick={() => navigate("/admin/events")}
+            onClick={() => navigate("/admin/manage-events")}
           >
             Cancel
           </Button>

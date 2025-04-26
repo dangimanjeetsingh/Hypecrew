@@ -9,8 +9,7 @@ interface CreateEventPageProps {
 }
 
 export default function CreateEventPage({ isEditing = false }: CreateEventPageProps) {
-  // Use query parameter for editing
-  const [location] = useLocation();
+  // Get the ID from the query parameter for editing
   const searchParams = new URLSearchParams(window.location.search);
   const id = searchParams.get("id");
   const hasIdParam = id !== null;
