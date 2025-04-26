@@ -57,6 +57,12 @@ export const insertEventSchema = createInsertSchema(events).pick({
   category: true,
   featured: true,
   organizer: true,
+}).extend({
+  // Allow for date objects
+  date: z.union([z.string(), z.date()]),
+  endDate: z.union([z.string(), z.date(), z.null()]).optional(),
+  // For image upload support
+  imageFile: z.instanceof(File).optional(),
 });
 
 export const registrations = pgTable("registrations", {

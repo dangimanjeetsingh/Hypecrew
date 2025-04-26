@@ -71,23 +71,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Unauthorized" });
       }
       
+      console.log("[Events] Create event request received");
+      
+      // Extract and validate data
       const validatedData = insertEventSchema.parse(req.body);
-      const event = await storage.createEvent(validatedData);
+      
+      // Handle dates - ensure they are proper Date objects
+      const processedData = {
+        ...validatedData,
+        date: new Date(validatedData.date),
+        endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
+      };
+      
+      // Remove the imageFile field which we don't want to store
+      if ('imageFile' in processedData) {
+        delete processedData.imageFile;
+      }
+      
+      const event = await storage.createEvent(processedData);
       res.status(201).json(event);
     } catch (error) {
+      console.error("[Events] Create event error:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors });
       }
-      res.status(500).json({ message: "Failed to create event" });
+      res.status(500).json({ message: "Failed to create event", error: error instanceof Error ? error.message : String(error) });
     }
   });
 
-  app.put("/api/events/:id", async (req, res) => {
+  // Handle both PUT and PATCH for event updates
+  app.put("/api/events/:id", updateEvent);
+  app.patch("/api/events/:id", updateEvent);
+  
+  // Function to handle event updates
+  async function updateEvent(req: Request, res: Response) {
     try {
       // Check if user is authenticated and admin
       if (!req.isAuthenticated() || !req.user.isAdmin) {
         return res.status(403).json({ message: "Unauthorized" });
       }
+      
+      console.log("[Events] Update event request received");
       
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -99,16 +123,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Event not found" });
       }
       
+      // Extract and validate data
       const validatedData = insertEventSchema.partial().parse(req.body);
-      const updatedEvent = await storage.updateEvent(id, validatedData);
+      
+      // Process dates
+      const processedData: any = { ...validatedData };
+      
+      if (validatedData.date) {
+        processedData.date = new Date(validatedData.date);
+      }
+      
+      if (validatedData.endDate) {
+        processedData.endDate = new Date(validatedData.endDate);
+      } else if (validatedData.endDate === null) {
+        processedData.endDate = null;
+      }
+      
+      // Remove the imageFile field
+      if ('imageFile' in processedData) {
+        delete processedData.imageFile;
+      }
+      
+      // Update the event
+      const updatedEvent = await storage.updateEvent(id, processedData);
       res.json(updatedEvent);
     } catch (error) {
+      console.error("[Events] Update event error:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: error.errors });
       }
-      res.status(500).json({ message: "Failed to update event" });
+      res.status(500).json({ message: "Failed to update event", error: error instanceof Error ? error.message : String(error) });
     }
-  });
+  }
 
   app.delete("/api/events/:id", async (req, res) => {
     try {

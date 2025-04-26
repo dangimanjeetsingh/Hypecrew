@@ -34,6 +34,7 @@ import { useLocation } from "wouter";
 
 // Create a schema for the form
 const formSchema = insertEventSchema.extend({
+  // Convert string inputs to Date objects
   date: z.coerce.date(),
   endDate: z.coerce.date().optional(),
 }).superRefine((data, ctx) => {
@@ -85,9 +86,27 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
     setIsSubmitting(true);
     
     try {
+      // If we have a date object, ensure it's properly serialized
+      const formattedValues = {
+        ...values,
+        date: values.date instanceof Date ? values.date.toISOString() : values.date,
+        endDate: values.endDate instanceof Date ? values.endDate.toISOString() : values.endDate,
+      };
+      
+      // Check if we need to send the uploaded file
+      if (values.imageFile && values.imageFile instanceof File) {
+        // If image was uploaded directly, we already set the dataURL in the imageUrl field
+        // Just let the backend know it's a base64 encoded image
+        if (values.imageUrl.startsWith('data:')) {
+          console.log("Using uploaded image data URL");
+        } else {
+          console.log("Using image URL");
+        }
+      } 
+      
       if (isEditing && event) {
         // Update existing event
-        await apiRequest("PUT", `/api/events/${event.id}`, values);
+        await apiRequest("PATCH", `/api/events/${event.id}`, formattedValues);
         toast({
           title: "Event updated",
           description: "The event has been updated successfully",
@@ -96,7 +115,7 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
         queryClient.invalidateQueries({ queryKey: [`/api/events/${event.id}`] });
       } else {
         // Create new event
-        await apiRequest("POST", "/api/events", values);
+        await apiRequest("POST", "/api/events", formattedValues);
         toast({
           title: "Event created",
           description: "The event has been created successfully",
@@ -105,8 +124,9 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
       }
       
       // Navigate back to admin events page
-      navigate("/admin/events");
+      navigate("/admin/manage-events");
     } catch (error) {
+      console.error("Form submission error:", error);
       toast({
         title: isEditing ? "Failed to update event" : "Failed to create event",
         description: error instanceof Error ? error.message : "An error occurred",
@@ -152,22 +172,76 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
           )}
         />
         
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter image URL" {...field} />
-              </FormControl>
-              <p className="text-sm text-muted-foreground mt-1">
-                Enter a URL for your event image. Try using Unsplash for free high-quality images.
-              </p>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="imageFile"
+            render={({ field: { value, onChange, ...fieldProps } }) => (
+              <FormItem>
+                <FormLabel>Upload Event Image</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        onChange(file);
+                        
+                        // Create a temporary URL for preview
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          if (e.target?.result) {
+                            // Set the image URL to the data URL for preview
+                            form.setValue('imageUrl', e.target.result as string);
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    {...fieldProps}
+                  />
+                </FormControl>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Upload an image for your event (JPG, PNG, GIF)
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter image URL" {...field} />
+                </FormControl>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Alternatively, enter a URL for your event image. Try using Unsplash for free high-quality images.
+                </p>
+                {field.value && (
+                  <div className="mt-2 rounded-md overflow-hidden w-full max-w-xs">
+                    <img 
+                      src={field.value} 
+                      alt="Image preview" 
+                      className="w-full h-auto object-cover"
+                      onError={() => {
+                        // Clear invalid image URLs
+                        if (!field.value.startsWith('data:')) {
+                          field.onChange('');
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
