@@ -47,7 +47,7 @@ export const events = pgTable("events", {
   organizer: text("organizer").notNull(),
 });
 
-export const insertEventSchema = createInsertSchema(events).pick({
+export const insertEventSchemaClient = createInsertSchema(events).pick({
   title: true,
   description: true,
   venue: true,
@@ -63,6 +63,24 @@ export const insertEventSchema = createInsertSchema(events).pick({
   endDate: z.union([z.string(), z.date(), z.null()]).optional(),
   // For image upload support
   imageFile: z.instanceof(File).optional(),
+});
+
+export const insertEventSchemaServer = createInsertSchema(events).pick({
+  title: true,
+  description: true,
+  venue: true,
+  date: true,
+  endDate: true,
+  imageUrl: true,
+  category: true,
+  featured: true,
+  organizer: true,
+}).extend({
+  // Allow for date objects
+  date: z.union([z.string(), z.date()]),
+  endDate: z.union([z.string(), z.date(), z.null()]).optional(),
+  // For image upload support
+  imageFile: z.any().optional(),
 });
 
 export const registrations = pgTable("registrations", {
