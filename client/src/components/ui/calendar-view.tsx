@@ -5,7 +5,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMont
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn, formatEventDate, formatEventTime } from "@/lib/utils";
-import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 
 interface CalendarViewProps {
   events: Event[];
@@ -145,21 +145,19 @@ export function CalendarView({ events }: CalendarViewProps) {
               {eventsOnSelectedDate.length > 0 ? (
                 eventsOnSelectedDate.map((event) => (
                   <Link key={event.id} href={`/events/${event.id}`}>
-                    <a className="block">
-                      <div className="border-l-4 border-primary pl-4 bg-muted/50 p-4 rounded-r-lg hover:bg-muted transition-colors">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                          <h3 className="text-lg font-semibold">{event.title}</h3>
-                          <div className="text-sm text-muted-foreground whitespace-nowrap">
-                            {formatEventTime(event.date)} - {event.endDate && formatEventTime(event.endDate)}
-                          </div>
-                        </div>
-                        <p className="text-muted-foreground mb-2 line-clamp-2">{event.description}</p>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{event.venue}</span>
+                    <div className="border-l-4 border-primary pl-4 bg-muted/50 p-4 rounded-r-lg hover:bg-muted transition-colors cursor-pointer">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">{event.title}</h3>
+                        <div className="text-sm text-muted-foreground whitespace-nowrap">
+                          {formatEventTime(event.date)} - {event.endDate && formatEventTime(event.endDate)}
                         </div>
                       </div>
-                    </a>
+                      <p className="text-muted-foreground mb-2 line-clamp-2">{event.description}</p>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span>{event.venue}</span>
+                      </div>
+                    </div>
                   </Link>
                 ))
               ) : (
@@ -170,11 +168,9 @@ export function CalendarView({ events }: CalendarViewProps) {
                     Select another date or browse all events
                   </p>
                   <Link href="/">
-                    <a>
-                      <Button variant="outline" className="mt-4">
-                        Browse All Events
-                      </Button>
-                    </a>
+                    <Button variant="outline" className="mt-4">
+                      Browse All Events
+                    </Button>
                   </Link>
                 </div>
               )}
