@@ -18,17 +18,17 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/">
-              <a className="flex-shrink-0">
+              <div className="flex-shrink-0">
                 <h1 className="text-2xl font-bold text-primary">HYPECREW</h1>
-              </a>
+              </div>
             </Link>
             
             <div className="hidden md:block ml-10">
               <Link href="/calendar">
-                <a className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium flex items-center">
+                <div className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium flex items-center">
                   <Calendar className="h-5 w-5 mr-1" />
                   Calendar
-                </a>
+                </div>
               </Link>
             </div>
           </div>
@@ -36,9 +36,9 @@ export function Header() {
           <div className="flex items-center space-x-4">
             {user?.isAdmin && (
               <Link href="/admin/events">
-                <a className="text-muted-foreground hover:text-foreground">
+                <div className="text-muted-foreground hover:text-foreground">
                   <Settings className="h-6 w-6" />
-                </a>
+                </div>
               </Link>
             )}
             
@@ -69,9 +69,7 @@ export function Header() {
               </div>
             ) : (
               <Link href="/auth">
-                <a>
-                  <Button>Login</Button>
-                </a>
+                <Button>Login</Button>
               </Link>
             )}
           </div>
