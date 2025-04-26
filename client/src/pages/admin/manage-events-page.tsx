@@ -80,13 +80,11 @@ export default function ManageEventsPage() {
     <div className="py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Manage Events</h1>
-        <Link href="/admin/events/create">
-          <a>
-            <Button>
-              <Plus className="h-5 w-5 mr-2" />
-              Create Event
-            </Button>
-          </a>
+        <Link href="/admin/create-event">
+          <Button>
+            <Plus className="h-5 w-5 mr-2" />
+            Create Event
+          </Button>
         </Link>
       </div>
       
@@ -127,10 +125,10 @@ export default function ManageEventsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Link href={`/admin/events/${event.id}/edit`}>
-                        <a className="text-primary hover:text-primary/80">
+                      <Link href={`/admin/create-event?id=${event.id}`}>
+                        <button className="text-primary hover:text-primary/80">
                           <Edit className="h-5 w-5" />
-                        </a>
+                        </button>
                       </Link>
                       
                       <AlertDialog>
@@ -166,12 +164,10 @@ export default function ManageEventsPage() {
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-10">
                     <p className="text-muted-foreground">No events found.</p>
-                    <Link href="/admin/events/create">
-                      <a>
-                        <Button variant="outline" className="mt-4">
-                          Create your first event
-                        </Button>
-                      </a>
+                    <Link href="/admin/create-event">
+                      <Button variant="outline" className="mt-4">
+                        Create your first event
+                      </Button>
                     </Link>
                   </TableCell>
                 </TableRow>

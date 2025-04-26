@@ -1,4 +1,4 @@
-import { Link, useParams } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Event } from "@shared/schema";
 import { EventForm } from "@/components/ui/event-form";
@@ -9,8 +9,15 @@ interface CreateEventPageProps {
 }
 
 export default function CreateEventPage({ isEditing = false }: CreateEventPageProps) {
-  const { id } = useParams<{ id: string }>();
-  const eventId = parseInt(id || "0");
+  // Use query parameter for editing
+  const [location] = useLocation();
+  const searchParams = new URLSearchParams(window.location.search);
+  const id = searchParams.get("id");
+  const hasIdParam = id !== null;
+  const eventId = id ? parseInt(id) : 0;
+  
+  // Override isEditing prop if we have an ID parameter
+  isEditing = isEditing || hasIdParam;
   
   const { data: event, isLoading, error } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],

@@ -23,12 +23,7 @@ function Router() {
       
       {/* Admin routes */}
       <ProtectedRoute path="/admin/manage-events" component={ManageEventsPage} adminOnly />
-      <ProtectedRoute path="/admin/create-event" component={CreateEventPage} adminOnly />
-      <ProtectedRoute 
-        path="/admin/edit-event/:id" 
-        component={() => <CreateEventPage isEditing />} 
-        adminOnly 
-      />
+      <ProtectedRoute path="/admin/create-event" component={() => <CreateEventPage isEditing={false} />} adminOnly />
       
       {/* Fallback for 404 */}
       <Route component={NotFound} />
