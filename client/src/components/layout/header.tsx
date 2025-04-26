@@ -35,11 +35,18 @@ export function Header() {
           
           <div className="flex items-center space-x-4">
             {user?.isAdmin && (
-              <Link href="/admin/events">
-                <div className="text-muted-foreground hover:text-foreground">
-                  <Settings className="h-6 w-6" />
-                </div>
-              </Link>
+              <div className="flex space-x-4">
+                <Link href="/admin/manage-events">
+                  <div className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium">
+                    Manage Events
+                  </div>
+                </Link>
+                <Link href="/admin/create-event">
+                  <div className="text-muted-foreground hover:text-foreground px-3 py-2 rounded-md text-sm font-medium">
+                    Create Event
+                  </div>
+                </Link>
+              </div>
             )}
             
             <button

@@ -22,10 +22,10 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       
       {/* Admin routes */}
-      <ProtectedRoute path="/admin/events" component={ManageEventsPage} adminOnly />
-      <ProtectedRoute path="/admin/events/create" component={CreateEventPage} adminOnly />
+      <ProtectedRoute path="/admin/manage-events" component={ManageEventsPage} adminOnly />
+      <ProtectedRoute path="/admin/create-event" component={CreateEventPage} adminOnly />
       <ProtectedRoute 
-        path="/admin/events/:id/edit" 
+        path="/admin/edit-event/:id" 
         component={() => <CreateEventPage isEditing />} 
         adminOnly 
       />

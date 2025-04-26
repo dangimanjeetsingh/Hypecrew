@@ -55,12 +55,14 @@ export function setupAuth(app: Express) {
   
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "HYPECREW-secret-key",
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     store: storage.sessionStore,
     cookie: {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax', // Important for cross-domain cookie behavior
+      secure: false, // Set to true in production with HTTPS
     }
   };
 
@@ -184,7 +186,16 @@ export function setupAuth(app: Express) {
   });
 
   app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
+    console.log('[Auth] GET /api/user called, session:', 
+      req.session ? 'exists' : 'missing', 
+      'authenticated:', req.isAuthenticated());
+    
+    if (!req.isAuthenticated()) {
+      console.log('[Auth] User not authenticated');
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    console.log('[Auth] User authenticated:', req.user.username);
     
     // Return user without password
     const { password, ...userWithoutPassword } = req.user;

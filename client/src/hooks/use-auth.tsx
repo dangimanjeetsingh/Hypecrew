@@ -25,9 +25,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: user,
     error,
     isLoading,
+    refetch,
   } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    retry: false,
+    staleTime: 0, // Always refetch when requested
+    refetchInterval: 10000, // Refetch every 10 seconds to keep session alive
   });
 
   const loginMutation = useMutation({
