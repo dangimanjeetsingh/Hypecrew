@@ -205,12 +205,29 @@ export class MemStorage implements IStorage {
 
   async createEvent(insertEvent: InsertEvent): Promise<Event> {
     const id = this.eventIdCounter++;
-    const event: Event = { 
-      id, 
+    
+    // Ensure dates are properly converted to Date objects
+    const processedEvent = {
       ...insertEvent,
-      endDate: insertEvent.endDate ?? null,
+      // Convert date string to Date object if needed
+      date: insertEvent.date instanceof Date ? insertEvent.date : new Date(insertEvent.date),
+      // Convert endDate string to Date or set to null
+      endDate: insertEvent.endDate ? 
+        (insertEvent.endDate instanceof Date ? insertEvent.endDate : new Date(insertEvent.endDate)) 
+        : null,
       featured: insertEvent.featured ?? false
     };
+    
+    // Remove imageFile field if present (not stored in database)
+    if ('imageFile' in processedEvent) {
+      delete (processedEvent as any).imageFile;
+    }
+    
+    const event: Event = { 
+      id, 
+      ...processedEvent
+    };
+    
     this.events.set(id, event);
     return event;
   }
@@ -219,7 +236,28 @@ export class MemStorage implements IStorage {
     const event = await this.getEvent(id);
     if (!event) return undefined;
     
-    const updatedEvent: Event = { ...event, ...updateData };
+    // Process the update data
+    const processedUpdate: any = { ...updateData };
+    
+    // Convert date to Date object if provided
+    if (updateData.date) {
+      processedUpdate.date = updateData.date instanceof Date ? 
+        updateData.date : new Date(updateData.date);
+    }
+    
+    // Handle endDate - might be a date, null, or undefined
+    if (updateData.endDate !== undefined) {
+      processedUpdate.endDate = updateData.endDate ? 
+        (updateData.endDate instanceof Date ? updateData.endDate : new Date(updateData.endDate)) 
+        : null;
+    }
+    
+    // Remove imageFile field if present
+    if ('imageFile' in processedUpdate) {
+      delete processedUpdate.imageFile;
+    }
+    
+    const updatedEvent: Event = { ...event, ...processedUpdate };
     this.events.set(id, updatedEvent);
     return updatedEvent;
   }

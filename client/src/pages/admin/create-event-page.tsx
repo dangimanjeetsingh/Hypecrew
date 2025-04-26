@@ -20,11 +20,11 @@ export default function CreateEventPage({ isEditing = false }: CreateEventPagePr
   return (
     <div className="py-8">
       <div className="mb-8">
-        <Link href="/admin/events">
-          <a className="inline-flex items-center text-sm font-medium text-primary">
+        <Link href="/admin/manage-events">
+          <div className="inline-flex items-center text-sm font-medium text-primary hover:underline cursor-pointer">
             <ArrowLeft className="h-5 w-5 mr-1" />
             Back to Events
-          </a>
+          </div>
         </Link>
       </div>
       
@@ -39,8 +39,8 @@ export default function CreateEventPage({ isEditing = false }: CreateEventPagePr
       ) : isEditing && (error || !event) ? (
         <div className="text-center py-10">
           <p className="text-destructive mb-4">Failed to load event details.</p>
-          <Link href="/admin/events">
-            <a className="text-primary hover:underline">Return to events list</a>
+          <Link href="/admin/manage-events">
+            <span className="text-primary hover:underline cursor-pointer">Return to events list</span>
           </Link>
         </div>
       ) : (
