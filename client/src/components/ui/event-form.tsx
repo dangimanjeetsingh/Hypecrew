@@ -26,7 +26,7 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Event, categories, insertEventSchema } from "@shared/schema";
+import { Event, categories, insertEventSchemaClient as insertEventSchema } from "@shared/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
