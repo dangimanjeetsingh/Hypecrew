@@ -7,6 +7,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Add health check route
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
