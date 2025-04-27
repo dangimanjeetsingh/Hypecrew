@@ -62,7 +62,8 @@ export const insertEventSchemaClient = createInsertSchema(events).pick({
   date: z.union([z.string(), z.date()]),
   endDate: z.union([z.string(), z.date(), z.null()]).optional(),
   // For image upload support
-  imageFile: z.instanceof(File).optional(),
+  // imageFile: z.any().optional() // Replace File with any or appropriate type for server-side
+  imageFile: z.any().optional()
 });
 
 export const insertEventSchemaServer = createInsertSchema(events).pick({
